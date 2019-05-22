@@ -1,2 +1,2 @@
 # passwordstore-metadata
-Insert metadata into passwordstore with ease
+**WIP** Insert metadata into passwordstore with ease
