@@ -1,10 +1,18 @@
 #!/bin/bash
-ENTRY="$1"
-
-echo -n Password:
+echo -n "Type Password: "
 read -s PASSWORD
 echo
+echo -n "Retype Password: "
+read -s PASSWORD_CHECK
+echo
 
+if [ "${PASSWORD}" -ne "${PASSWORD_CHECK}"  ]; then
+    echo "Passwords doesn't match"
+    exit 1
+fi
+
+
+ENTRY="$1"
 for i in "$@"
 do
     case $i in
