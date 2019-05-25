@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 read -s -p "Type Password: " PASSWORD ; echo
 read -s -p "Retype Password: " PASSWORD_CONFIRM ; echo
 
