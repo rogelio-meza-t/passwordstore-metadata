@@ -2,7 +2,7 @@
 read -s -p "Type Password: " PASSWORD ; echo
 read -s -p "Retype Password: " PASSWORD_CONFIRM ; echo
 
-if [ "${PASSWORD}" -ne "${PASSWORD_CONFIRM}"  ]; then
+if [ "${PASSWORD}" -ne "${PASSWORD_CONFIRM}" ]; then
     echo "Passwords doesn't match"
     exit 1
 fi
