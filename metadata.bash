@@ -1,8 +1,8 @@
-#!/bin/bash
+#!/usr/bin/env bash
 read -s -p "Type Password: " PASSWORD ; echo
 read -s -p "Retype Password: " PASSWORD_CONFIRM ; echo
 
-if [ "${PASSWORD}" -ne "${PASSWORD_CONFIRM}"  ]; then
+if [ "${PASSWORD}" -ne "${PASSWORD_CONFIRM}" ]; then
     echo "Passwords doesn't match"
     exit 1
 fi
@@ -33,4 +33,4 @@ updated: ${UPDATED}
 cycle: ${CYCLE}
 _EOF_
 
-echo "${template}" | pass insert -m "$ENTRY"
+echo "${template}" | pass insert -m "${ENTRY}"
