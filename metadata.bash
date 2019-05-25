@@ -33,4 +33,4 @@ updated: ${UPDATED}
 cycle: ${CYCLE}
 _EOF_
 
-echo "${template}" | pass insert -m "$ENTRY"
+echo "${template}" | pass insert -m "${ENTRY}"
