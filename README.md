@@ -1,5 +1,5 @@
 # passwordstore-metadata
-Insert metadata into passwordstore with ease
+Insert metadata into [pass](https://www.passwordstore.org/) with ease
 
 ## Usage
 ```
