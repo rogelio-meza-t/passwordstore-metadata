@@ -12,25 +12,18 @@ ENTRY="$1"
 for i in "$@"
 do
     case $i in
-        --username=*) USERNAME="${i#*=}" ; shift ;;
-        --email=*) EMAIL="${i#*=}" ; shift ;;
-        --url=*) URL="${i#*=}" ; shift ;;
-        --oauth2=*) OAUTH2="${i#*=}" ; shift ;;
-        --multifactor=*) MFA="${i#*=}" ; shift ;;
-        --updated=*) UPDATED="${i#*=}" ; shift ;;
-        --cycle=*) CYCLE="${i#*=}" ; shift ;;
+        --username=*) USERNAME=$'\n'"username: ${i#*=}" ; shift ;;
+        --email=*) EMAIL=$'\n'"email: ${i#*=}" ; shift ;;
+        --url=*) URL=$'\n'"URL: ${i#*=}" ; shift ;;
+        --oauth2=*) OAUTH2=$'\n'"OAuth2: ${i#*=}" ; shift ;;
+        --multifactor=*) MFA=$'\n'"MFA: ${i#*=}" ; shift ;;
+        --updated=*) UPDATED=$'\n'"updated: ${i#*=}" ; shift ;;
+        --cycle=*) CYCLE=$'\n'"cycle: ${i#*=}" ; shift ;;
     esac
 done
 
 read -d '' template <<_EOF_
-${PASSWORD}
-username: ${USERNAME}
-email: ${EMAIL}
-URL: ${URL}
-OAuth2: ${OAUTH2}
-MFA: ${MFA}
-updated: ${UPDATED}
-cycle: ${CYCLE}
+${PASSWORD}${USERNAME}${EMAIL}${URL}${OAUTH2}${MFA}${UPDATED}${CYCLE}
 _EOF_
 
 echo "${template}" | pass insert -m "${ENTRY}"
