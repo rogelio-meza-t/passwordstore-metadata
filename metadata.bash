@@ -12,13 +12,13 @@ ENTRY="$1"
 for i in "$@"
 do
     case $i in
-        --username=*) USERNAME="${i#*=}" ; shift ;;
-        --email=*) EMAIL="${i#*=}" ; shift ;;
-        --url=*) URL="${i#*=}" ; shift ;;
-        --oauth2=*) OAUTH2="${i#*=}" ; shift ;;
-        --multifactor=*) MFA="${i#*=}" ; shift ;;
-        --updated=*) UPDATED="${i#*=}" ; shift ;;
-        --cycle=*) CYCLE="${i#*=}" ; shift ;;
+        --username=*) USERNAME="username: ${i#*=}" ; shift ;;
+        --email=*) EMAIL="email: ${i#*=}" ; shift ;;
+        --url=*) URL="URL: ${i#*=}" ; shift ;;
+        --oauth2=*) OAUTH2="OAuth2: ${i#*=}" ; shift ;;
+        --multifactor=*) MFA="MFA: ${i#*=}" ; shift ;;
+        --updated=*) UPDATED="updated: ${i#*=}" ; shift ;;
+        --cycle=*) CYCLE="cycle: ${i#*=}" ; shift ;;
     esac
 done
 
