@@ -24,13 +24,13 @@ done
 
 read -d '' template <<_EOF_
 ${PASSWORD}
-username: ${USERNAME}
-email: ${EMAIL}
-URL: ${URL}
-OAuth2: ${OAUTH2}
-MFA: ${MFA}
-updated: ${UPDATED}
-cycle: ${CYCLE}
+${USERNAME}
+${EMAIL}
+${URL}
+${OAUTH2}
+${MFA}
+${UPDATED}
+${CYCLE}
 _EOF_
 
 echo "${template}" | pass insert -m "${ENTRY}"
