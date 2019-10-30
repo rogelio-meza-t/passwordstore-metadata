@@ -13,9 +13,9 @@ do
     esac
 done
 
-if [[ $UPDATED =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]] && date -d "$UPDATED" >/dev/null
-      then UPDATED=$'\n'"updated: ${UPDATED}"
-      else echo "Date not valid"; exit 1
+if [[ $UPDATED =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]] && date -d "$UPDATED" >/dev/null; then
+    UPDATED=$'\n'"updated: ${UPDATED}"
+    else echo "Date for --updated is not valid"; exit 1
 fi
 
 read -s -p "Type Password: " PASSWORD ; echo
