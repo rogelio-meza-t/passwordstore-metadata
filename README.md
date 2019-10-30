@@ -30,7 +30,8 @@ Options:
 
     --updated=[ updated ]
         The last date you have updated your password. Set the date as ISO 8601.
-        E.g 2019-05-01 (it means May 1, 2019).
+        E.g 2019-05-01 (it means May 1, 2019). This format is required and it
+        will be validated.
 
     --cycle=[ cycle ]
         Indicates the period you want to change your password. Use d,w,m or y
