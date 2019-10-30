@@ -12,7 +12,7 @@ ENTRY="$1"
 for i in "$@"
 do
     case $i in
-        --username=*) USERNAME=$'\n'"username: ${i#*=}" ; shift ;;
+        --username=*) PUSERNAME=$'\n'"username: ${i#*=}" ; shift ;;
         --email=*) EMAIL=$'\n'"email: ${i#*=}" ; shift ;;
         --url=*) URL=$'\n'"URL: ${i#*=}" ; shift ;;
         --oauth2=*) OAUTH2=$'\n'"OAuth2: ${i#*=}" ; shift ;;
@@ -23,7 +23,7 @@ do
 done
 
 read -d '' template <<_EOF_
-${PASSWORD}${USERNAME}${EMAIL}${URL}${OAUTH2}${MFA}${UPDATED}${CYCLE}
+${PASSWORD}${PUSERNAME}${EMAIL}${URL}${OAUTH2}${MFA}${UPDATED}${CYCLE}
 _EOF_
 
 echo "${template}" | pass insert -m "${ENTRY}"
