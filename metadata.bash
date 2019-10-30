@@ -18,6 +18,10 @@ if [[ $UPDATED =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]] && date -d "$UPDATED" >/dev/nu
     else echo "Date for --updated is not valid"; exit 1
 fi
 
+if [[ ! "${CYCLE: -1}" =~ [d,w,m]{1} ]]; then
+    echo "Quantifier for --cycle is not valid"; exit 1
+fi
+
 read -s -p "Type Password: " PASSWORD ; echo
 read -s -p "Retype Password: " PASSWORD_CONFIRM ; echo
 
