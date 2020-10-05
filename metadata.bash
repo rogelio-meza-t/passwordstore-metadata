@@ -1,11 +1,18 @@
 #!/usr/bin/env bash
 ENTRY="$1"
 
+HAS_MFA=0
+TOTAL_WARNINGS=0
+
 function has_multifactor(){
     MFA=$(pass "$ENTRY" | grep MFA | cut -d' ' -f2 )
     if [[ -z "$MFA" ]] || [[ "$MFA" == "none" ]]; then
-        echo -e "\tMFA is not set";
+        ((HAS_MFA=HAS_MFA+1))
     fi
+}
+
+function sum_warnings(){
+    ((TOTAL_WARNINGS=HAS_MFA))
 }
 
 
@@ -25,8 +32,14 @@ done
 
 
 if [[ $AUDIT ]]; then
-    echo "Warnings:";
     has_multifactor
+    
+    sum_warnings
+    echo "Total warnings found: $TOTAL_WARNINGS";
+    if [[ HAS_MFA -gt 0 ]]; then
+        echo -e "\tMFA is not set";
+    fi
+    
     exit 1
 fi
 
