@@ -1,13 +1,14 @@
 #!/usr/bin/env bash
+ENTRY="$1"
 
 function has_multifactor(){
-    MFA=$(pass "$1" | grep MFA | cut -d' ' -f2 )
-    if [[ -z "$MFA" ]]; then
-        echo -e "\tMFA if not set";
+    MFA=$(pass "$ENTRY" | grep MFA | cut -d' ' -f2 )
+    if [[ -z "$MFA" ]] || [[ "$MFA" == "none" ]]; then
+        echo -e "\tMFA is not set";
     fi
 }
 
-ENTRY="$1"
+
 for i in "$@"
 do
     case $i in
@@ -25,7 +26,7 @@ done
 
 if [[ $AUDIT ]]; then
     echo "Warnings:";
-    has_multifactor "$ENTRY"
+    has_multifactor
     exit 1
 fi
 
