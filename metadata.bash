@@ -1,4 +1,12 @@
 #!/usr/bin/env bash
+
+function has_multifactor(){
+    MFA=$(pass "$1" | grep MFA | cut -d' ' -f2 )
+    if [[ -z "$MFA" ]]; then
+        echo -e "\tMFA if not set";
+    fi
+}
+
 ENTRY="$1"
 for i in "$@"
 do
@@ -10,8 +18,16 @@ do
         --multifactor=*) MFA=$'\n'"MFA: ${i#*=}" ; shift ;;
         --updated=*) UPDATED="${i#*=}" ; shift ;;
         --cycle=*) CYCLE=$'\n'"cycle: ${i#*=}" ; shift ;;
+        --audit=*) AUDIT="${i#*=}" ; shift ;;
     esac
 done
+
+
+if [[ $AUDIT ]]; then
+    echo "Warnings:";
+    has_multifactor "$ENTRY"
+    exit 1
+fi
 
 if [[ $UPDATED =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]] && date -d "$UPDATED" >/dev/null; then
     UPDATED=$'\n'"updated: ${UPDATED}"
