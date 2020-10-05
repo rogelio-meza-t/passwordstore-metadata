@@ -11,6 +11,25 @@ function has_multifactor(){
     fi
 }
 
+function updated_password(){
+    cycle=$(pass "$ENTRY" | grep cycle | cut -d' ' -f2 )
+    updated=$(pass "${ENTRY}" | grep updated | cut -d' ' -f2 )
+    last_update=$(date -d "$updated")
+    identifier=${cycle: -1}
+    quantity=${cycle:0:-1}
+    
+    if [[ "$identifier" == "m" ]]; then
+        factor="month"
+    elif [[ "$identifier" == "y" ]]; then
+        factor="year"
+    else
+        # by default, factor is in days
+        factor="day"
+    fi
+    next_update=$(date -d "$updated +$quantity $factor")
+}
+
+
 function sum_warnings(){
     ((TOTAL_WARNINGS=HAS_MFA))
 }
