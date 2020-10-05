@@ -2,6 +2,7 @@
 ENTRY="$1"
 
 HAS_MFA=0
+IS_OUTDATED=0
 TOTAL_WARNINGS=0
 
 function has_multifactor(){
@@ -27,6 +28,10 @@ function updated_password(){
         factor="day"
     fi
     next_update=$(date -d "$updated +$quantity $factor")
+    
+    if [[ "$next_update" -ge "$last_update" ]]; then
+        ((IS_OUTDATED=IS_OUTDATED+1))
+    fi
 }
 
 
