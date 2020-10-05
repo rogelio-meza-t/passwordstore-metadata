@@ -2,6 +2,7 @@
 ENTRY="$1"
 
 HAS_MFA=0
+IS_OUTDATED=0
 TOTAL_WARNINGS=0
 
 function has_multifactor(){
@@ -11,8 +12,31 @@ function has_multifactor(){
     fi
 }
 
+function outdated_password(){
+    cycle=$(pass "$ENTRY" | grep cycle | cut -d' ' -f2 )
+    updated=$(pass "${ENTRY}" | grep updated | cut -d' ' -f2 )
+    identifier=${cycle: -1}
+    quantity=${cycle:0:-1}
+    
+    if [[ "$identifier" == "m" ]]; then
+        factor="month"
+    elif [[ "$identifier" == "y" ]]; then
+        factor="year"
+    else
+        # by default, factor is in days
+        factor="day"
+    fi
+    next_update=$(date -d "$updated +$quantity $factor" '+%s')
+    today=$(date '+%s')
+    
+    if [[ $today -ge $next_update ]]; then
+        ((IS_OUTDATED=IS_OUTDATED+1))
+    fi
+}
+
+
 function sum_warnings(){
-    ((TOTAL_WARNINGS=HAS_MFA))
+    ((TOTAL_WARNINGS=HAS_MFA+IS_OUTDATED))
 }
 
 
@@ -33,11 +57,15 @@ done
 
 if [[ $AUDIT ]]; then
     has_multifactor
+    outdated_password
     
     sum_warnings
     echo "Total warnings found: $TOTAL_WARNINGS";
     if [[ HAS_MFA -gt 0 ]]; then
         echo -e "\tMFA is not set";
+    fi
+    if [[ IS_OUTDATED -gt 0 ]]; then
+        echo -e "\tThe password is outdated";
     fi
     
     exit 1
