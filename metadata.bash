@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+shopt -s dotglob
+
 ENTRY="$1"
 PREFIX="${PASSWORD_STORE_DIR:-$HOME/.password-store}"
 
@@ -45,12 +47,29 @@ function run_checks(){
     outdated_password "$1"
     
     sum_warnings
-    echo "Total warnings found: $TOTAL_WARNINGS";
-    if [[ HAS_MFA -gt 0 ]]; then
-        echo -e "\tMFA is not set";
+    if [[ $TOTAL_WARNINGS -gt 0 ]]; then
+        echo "$1 $TOTAL_WARNINGS" warnings;
+        if [[ HAS_MFA -gt 0 ]]; then
+            echo -e "    MFA is not set";
+        fi
+        if [[ IS_OUTDATED -gt 0 ]]; then
+            echo -e "    The password is outdated";
+        fi
     fi
-    if [[ IS_OUTDATED -gt 0 ]]; then
-        echo -e "\tThe password is outdated";
+}
+
+function do_audit(){
+    if [[ -d "$PREFIX/$1" ]]; then
+        for file in "$PREFIX/$1"/*; do
+            no_prefix=${file#$PREFIX/}
+            no_extension=${no_prefix%.gpg}
+            do_audit "${no_extension}"
+        done
+    elif [[ -f "$PREFIX/$1.gpg" ]]; then
+        run_checks "$1"
+    else
+        echo "$1 is not valid"
+        exit 1
     fi
 }
 
@@ -71,14 +90,7 @@ done
 
 
 if [[ $AUDIT ]]; then
-    if [[ -d "$PREFIX/$ENTRY" ]]; then
-        echo "$PREFIX/$ENTRY is a directory"
-    elif [[ -f "$PREFIX/$ENTRY.gpg" ]]; then
-        run_checks "$ENTRY"
-    else
-        echo "$PREFIX/$ENTRY is not valid"
-        exit 1
-    fi
+    do_audit "$ENTRY"
     exit 1
 fi
 
