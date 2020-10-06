@@ -1,20 +1,25 @@
 #!/usr/bin/env bash
-ENTRY="$1"
+shopt -s dotglob
 
-HAS_MFA=0
-IS_OUTDATED=0
-TOTAL_WARNINGS=0
+ENTRY="$1"
+PREFIX="${PASSWORD_STORE_DIR:-$HOME/.password-store}"
+
+YELLOW='\033[1;33m'
+CYAN='\033[1;34m'
+GREEN='\033[1;32m'
+NC='\033[0m' # No Color
+
 
 function has_multifactor(){
-    MFA=$(pass "$ENTRY" | grep MFA | cut -d' ' -f2 )
+    MFA=$(pass "$1" | grep MFA | cut -d' ' -f2 )
     if [[ -z "$MFA" ]] || [[ "$MFA" == "none" ]]; then
         ((HAS_MFA=HAS_MFA+1))
     fi
 }
 
 function outdated_password(){
-    cycle=$(pass "$ENTRY" | grep cycle | cut -d' ' -f2 )
-    updated=$(pass "${ENTRY}" | grep updated | cut -d' ' -f2 )
+    cycle=$(pass "$1" | grep cycle | cut -d' ' -f2 )
+    updated=$(pass "$1" | grep updated | cut -d' ' -f2 )
     identifier=${cycle: -1}
     quantity=${cycle:0:-1}
     
@@ -34,9 +39,45 @@ function outdated_password(){
     fi
 }
 
-
 function sum_warnings(){
     ((TOTAL_WARNINGS=HAS_MFA+IS_OUTDATED))
+}
+
+function run_checks(){
+    HAS_MFA=0
+    IS_OUTDATED=0
+    TOTAL_WARNINGS=0
+
+    has_multifactor "$1"
+    outdated_password "$1"
+    
+    sum_warnings
+    if [[ $TOTAL_WARNINGS -gt 0 ]]; then
+        echo -e ${CYAN}$1${NC} ${YELLOW} $TOTAL_WARNINGS warnings${NC};
+        if [[ HAS_MFA -gt 0 ]]; then
+            echo -e "    MFA is not set";
+        fi
+        if [[ IS_OUTDATED -gt 0 ]]; then
+            echo -e "    The password is outdated";
+        fi
+    else
+        echo -e ${CYAN}$1${NC} ${GREEN} '\u2713' ${NC};
+    fi
+}
+
+function do_audit(){
+    if [[ -d "$PREFIX/$1" ]]; then
+        for file in "$PREFIX/$1"/*; do
+            no_prefix=${file#$PREFIX/}
+            no_extension=${no_prefix%.gpg}
+            do_audit "${no_extension}"
+        done
+    elif [[ -f "$PREFIX/$1.gpg" ]]; then
+        run_checks "$1"
+    else
+        echo "$1 is not valid"
+        exit 1
+    fi
 }
 
 
@@ -56,18 +97,7 @@ done
 
 
 if [[ $AUDIT ]]; then
-    has_multifactor
-    outdated_password
-    
-    sum_warnings
-    echo "Total warnings found: $TOTAL_WARNINGS";
-    if [[ HAS_MFA -gt 0 ]]; then
-        echo -e "\tMFA is not set";
-    fi
-    if [[ IS_OUTDATED -gt 0 ]]; then
-        echo -e "\tThe password is outdated";
-    fi
-    
+    do_audit "$ENTRY"
     exit 1
 fi
 
