@@ -4,6 +4,11 @@ shopt -s dotglob
 ENTRY="$1"
 PREFIX="${PASSWORD_STORE_DIR:-$HOME/.password-store}"
 
+YELLOW='\033[1;33m'
+CYAN='\033[1;34m'
+GREEN='\033[1;32m'
+NC='\033[0m' # No Color
+
 
 function has_multifactor(){
     MFA=$(pass "$1" | grep MFA | cut -d' ' -f2 )
@@ -48,13 +53,15 @@ function run_checks(){
     
     sum_warnings
     if [[ $TOTAL_WARNINGS -gt 0 ]]; then
-        echo "$1 $TOTAL_WARNINGS" warnings;
+        echo -e ${CYAN}$1${NC} ${YELLOW} $TOTAL_WARNINGS warnings${NC};
         if [[ HAS_MFA -gt 0 ]]; then
             echo -e "    MFA is not set";
         fi
         if [[ IS_OUTDATED -gt 0 ]]; then
             echo -e "    The password is outdated";
         fi
+    else
+        echo -e ${CYAN}$1${NC} ${GREEN} '\u2713' ${NC};
     fi
 }
 
