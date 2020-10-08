@@ -5,8 +5,16 @@ Insert metadata into [pass](https://www.passwordstore.org/) with ease
 ```
 Usage:
 
-    pass metadata pass-name [ OPTIONS ]
+    pass metadata COMMAND ENTRY [ OPTIONS ]
 
+
+Commands:
+    audit
+        Check the ENTRY or the tree directory for outdated passwords and
+        accounts without MFA set. No OPTIONS required.
+    save
+        Insert new ENTRY using OPTIONS. See below for available options.
+    
 Options:
 
     --username=[ username ]
