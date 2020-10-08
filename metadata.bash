@@ -127,13 +127,11 @@ function save(){
     insert_metadata
 }
 
+function audit(){
+    do_audit "$ENTRY"
+}
+
 case "$1" in
     save)shift;save "$@" ;;
-    audit)shift;audit "$@" ;;
+    audit)shift;audit ;;
 esac
-
-
-if [[ $AUDIT ]]; then
-    do_audit "$ENTRY"
-    exit 1
-fi
