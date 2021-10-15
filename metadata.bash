@@ -35,6 +35,7 @@ function outdated_password(){
     today=$(date '+%s')
     
     if [[ $today -ge $next_update ]]; then
+	((DAYS_OUTDATED=($today - $next_update) / 86400))
         ((IS_OUTDATED=IS_OUTDATED+1))
     fi
 }
@@ -46,6 +47,7 @@ function sum_warnings(){
 function run_checks(){
     HAS_MFA=0
     IS_OUTDATED=0
+    DAYS_OUTDATED=0
     TOTAL_WARNINGS=0
 
     has_multifactor "$1"
@@ -58,7 +60,7 @@ function run_checks(){
             echo -e "    MFA is not set";
         fi
         if [[ IS_OUTDATED -gt 0 ]]; then
-            echo -e "    The password is outdated";
+            echo -e "    The password is outdated by ${DAYS_OUTDATED} days";
         fi
     else
         echo -e ${CYAN}$1${NC} ${GREEN} '\u2713' ${NC};
