@@ -13,17 +13,43 @@ function draw_tree(){
     readarray -d / -t levels <<< "$1"
     if [[ ${#levels[*]} -gt 1 ]]; then
         unset levels[0]
-        for i in "${levels[@]}"; do echo -n '     '; done
+	for ((i=1; i < ${#levels[@]}; i++)); do
+            if [[ $i -eq 1 ]]; then
+                echo -n '│   '
+	    else
+	        echo -n '    ';
+            fi
+        done
+
+        if [[ -d "$PREFIX/$1" && ${#levels[@]} -gt 1 ]]; then
+	    echo -n '└── '
+	elif [[ -f "$PREFIX/$1.gpg" ]]; then
+            readarray -d / -t dir <<< "$1"
+	    unset 'dir[${#dir[@]}-1]'
+	    dir=$(printf "/%s" "${dir[@]}")
+	    last_file=$(find "$PREFIX$dir" -maxdepth 1 -type f | tail -1)
+	    if [[ "$last_file" = "$PREFIX/$1.gpg" ]]; then
+	        echo -n '└── '
+	    else
+	        echo -n '├── '
+	    fi
+        else
+	    echo -n '├── '
+        fi
     fi
 
-    echo -n '└── '
-    echo -n ${levels[-1]}
+    if [[ -d "$PREFIX/$1" ]]; then
+	echo -en ${CYAN}${levels[-1]}${NC}
+    else
+        echo -n ${levels[-1]}
+    fi
+
     if ! [ -z "$2" ]; then
 	echo -en "$2"
     fi
     echo " "
-
 }
+
 function has_multifactor(){
     MFA=$(pass "$1" | grep MFA | cut -d' ' -f2 )
     if [[ -z "$MFA" ]] || [[ "$MFA" == "none" ]]; then
