@@ -20,10 +20,19 @@ function draw_tree(){
 	        echo -n '    ';
             fi
         done
-	echo -n '├── '
+        if [[ -d "$PREFIX/$1" && $i -gt 1 ]]; then
+	    echo -n '└── '
+        else
+	    echo -n '├── '
+        fi
     fi
 
-    echo -n ${levels[-1]}
+    if [[ -d "$PREFIX/$1" ]]; then
+	echo -en ${CYAN}${levels[-1]}${NC}
+    else
+        echo -n ${levels[-1]}
+    fi
+
     if ! [ -z "$2" ]; then
 	echo -en "$2"
     fi
