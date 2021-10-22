@@ -13,17 +13,23 @@ function draw_tree(){
     readarray -d / -t levels <<< "$1"
     if [[ ${#levels[*]} -gt 1 ]]; then
         unset levels[0]
-        for i in "${levels[@]}"; do echo -n '     '; done
+	for ((i=1; i < ${#levels[@]}; i++)); do
+            if [[ $i -eq 1 ]]; then
+                echo -n '│   '
+	    else
+	        echo -n '    ';
+            fi
+        done
+	echo -n '├── '
     fi
 
-    echo -n '└── '
     echo -n ${levels[-1]}
     if ! [ -z "$2" ]; then
 	echo -en "$2"
     fi
     echo " "
-
 }
+
 function has_multifactor(){
     MFA=$(pass "$1" | grep MFA | cut -d' ' -f2 )
     if [[ -z "$MFA" ]] || [[ "$MFA" == "none" ]]; then
