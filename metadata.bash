@@ -9,7 +9,21 @@ CYAN='\033[1;34m'
 GREEN='\033[1;32m'
 NC='\033[0m' # No Color
 
+function draw_tree(){
+    readarray -d / -t levels <<< "$1"
+    if [[ ${#levels[*]} -gt 1 ]]; then
+        unset levels[0]
+        for i in "${levels[@]}"; do echo -n '     '; done
+    fi
 
+    echo -n '└── '
+    echo -n ${levels[-1]}
+    if ! [ -z "$2" ]; then
+	echo -en "$2"
+    fi
+    echo " "
+
+}
 function has_multifactor(){
     MFA=$(pass "$1" | grep MFA | cut -d' ' -f2 )
     if [[ -z "$MFA" ]] || [[ "$MFA" == "none" ]]; then
