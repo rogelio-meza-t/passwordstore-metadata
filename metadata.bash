@@ -20,8 +20,19 @@ function draw_tree(){
 	        echo -n '    ';
             fi
         done
-        if [[ -d "$PREFIX/$1" && $i -gt 1 ]]; then
+
+        if [[ -d "$PREFIX/$1" && ${#levels[@]} -gt 1 ]]; then
 	    echo -n '└── '
+	elif [[ -f "$PREFIX/$1.gpg" ]]; then
+            readarray -d / -t dir <<< "$1"
+	    unset 'dir[${#dir[@]}-1]'
+	    dir=$(printf "/%s" "${dir[@]}")
+	    last_file=$(find "$PREFIX$dir" -maxdepth 1 -type f | tail -1)
+	    if [[ "$last_file" = "$PREFIX/$1.gpg" ]]; then
+	        echo -n '└── '
+	    else
+	        echo -n '├── '
+	    fi
         else
 	    echo -n '├── '
         fi
