@@ -9,7 +9,21 @@ CYAN='\033[1;34m'
 GREEN='\033[1;32m'
 NC='\033[0m' # No Color
 
+function draw_tree(){
+    readarray -d / -t levels <<< "$1"
+    if [[ ${#levels[*]} -gt 1 ]]; then
+        unset levels[0]
+        for i in "${levels[@]}"; do echo -n '     '; done
+    fi
 
+    echo -n '└── '
+    echo -n ${levels[-1]}
+    if ! [ -z "$2" ]; then
+	echo -en "$2"
+    fi
+    echo " "
+
+}
 function has_multifactor(){
     MFA=$(pass "$1" | grep MFA | cut -d' ' -f2 )
     if [[ -z "$MFA" ]] || [[ "$MFA" == "none" ]]; then
@@ -55,13 +69,15 @@ function run_checks(){
     
     sum_warnings
     if [[ $TOTAL_WARNINGS -gt 0 ]]; then
-        echo -e ${CYAN}$1${NC} ${YELLOW} $TOTAL_WARNINGS warnings${NC};
+        WARNINGS_STR="${YELLOW} $TOTAL_WARNINGS warnings${NC}"
         if [[ HAS_MFA -gt 0 ]]; then
-            echo -e "    MFA is not set";
+	    WARNINGS_STR="$WARNINGS_STR [MFA not set";
         fi
         if [[ IS_OUTDATED -gt 0 ]]; then
-            echo -e "    The password is outdated by ${DAYS_OUTDATED} days";
+            WARNINGS_STR="$WARNINGS_STR, Password outdated ${DAYS_OUTDATED} days";
         fi
+	WARNINGS_STR="$WARNINGS_STR]"
+	draw_tree "$1" "$WARNINGS_STR"
     else
         echo -e ${CYAN}$1${NC} ${GREEN} '\u2713' ${NC};
     fi
@@ -69,6 +85,8 @@ function run_checks(){
 
 function do_audit(){
     if [[ -d "$PREFIX/$1" ]]; then
+        draw_tree "$1"
+
         for file in "$PREFIX/$1"/*; do
             no_prefix=${file#$PREFIX/}
             no_extension=${no_prefix%.gpg}
