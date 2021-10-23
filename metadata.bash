@@ -13,39 +13,39 @@ function draw_tree(){
     readarray -d / -t levels <<< "$1"
     if [[ ${#levels[*]} -gt 1 ]]; then
         unset levels[0]
-	for ((i=1; i < ${#levels[@]}; i++)); do
+        for ((i=1; i < ${#levels[@]}; i++)); do
             if [[ $i -eq 1 ]]; then
                 echo -n '│   '
-	    else
-	        echo -n '    ';
+            else
+                echo -n '    ';
             fi
         done
 
         if [[ -d "$PREFIX/$1" && ${#levels[@]} -gt 1 ]]; then
-	    echo -n '└── '
-	elif [[ -f "$PREFIX/$1.gpg" ]]; then
+            echo -n '└── '
+        elif [[ -f "$PREFIX/$1.gpg" ]]; then
             readarray -d / -t dir <<< "$1"
-	    unset 'dir[${#dir[@]}-1]'
-	    dir=$(printf "/%s" "${dir[@]}")
-	    last_file=$(find "$PREFIX$dir" -maxdepth 1 -type f | tail -1)
-	    if [[ "$last_file" = "$PREFIX/$1.gpg" ]]; then
-	        echo -n '└── '
-	    else
-	        echo -n '├── '
-	    fi
+            unset 'dir[${#dir[@]}-1]'
+            dir=$(printf "/%s" "${dir[@]}")
+            last_file=$(find "$PREFIX$dir" -maxdepth 1 -type f | tail -1)
+            if [[ "$last_file" = "$PREFIX/$1.gpg" ]]; then
+                echo -n '└── '
+            else
+                echo -n '├── '
+            fi
         else
-	    echo -n '├── '
+            echo -n '├── '
         fi
     fi
 
     if [[ -d "$PREFIX/$1" ]]; then
-	echo -en ${CYAN}${levels[-1]}${NC}
+        echo -en ${CYAN}${levels[-1]}${NC}
     else
         echo -n ${levels[-1]}
     fi
 
     if ! [ -z "$2" ]; then
-	echo -en "$2"
+        echo -en "$2"
     fi
     echo " "
 }
@@ -75,7 +75,7 @@ function outdated_password(){
     today=$(date '+%s')
     
     if [[ $today -ge $next_update ]]; then
-	((DAYS_OUTDATED=($today - $next_update) / 86400))
+        ((DAYS_OUTDATED=($today - $next_update) / 86400))
         ((IS_OUTDATED=IS_OUTDATED+1))
     fi
 }
@@ -97,13 +97,13 @@ function run_checks(){
     if [[ $TOTAL_WARNINGS -gt 0 ]]; then
         WARNINGS_STR="${YELLOW} $TOTAL_WARNINGS warnings${NC}"
         if [[ HAS_MFA -gt 0 ]]; then
-	    WARNINGS_STR="$WARNINGS_STR [MFA not set";
+            WARNINGS_STR="$WARNINGS_STR [MFA not set";
         fi
         if [[ IS_OUTDATED -gt 0 ]]; then
             WARNINGS_STR="$WARNINGS_STR, Password outdated ${DAYS_OUTDATED} days";
         fi
-	WARNINGS_STR="$WARNINGS_STR]"
-	draw_tree "$1" "$WARNINGS_STR"
+        WARNINGS_STR="$WARNINGS_STR]"
+        draw_tree "$1" "$WARNINGS_STR"
     else
         echo -e ${CYAN}$1${NC} ${GREEN} '\u2713' ${NC};
     fi
@@ -112,17 +112,19 @@ function run_checks(){
 function do_audit(){
     if [[ -d "$PREFIX/$1" ]]; then
         draw_tree "$1"
-	if [[ -n "$2" ]]; then
-	    dir_entries="$PREFIX/$1/*.gpg"
+
+        if [[ -n "$2" ]]; then
+            dir_entries="$PREFIX/$1/*.gpg"
         else
-	    dir_entries="$PREFIX/$1/*"
-	fi
+            dir_entries="$PREFIX/$1/*"
+        fi
 
         for file in $dir_entries; do
             no_prefix=${file#$PREFIX/}
             no_extension=${no_prefix%.gpg}
             do_audit "${no_extension}" "$2"
         done
+
     elif [[ -f "$PREFIX/$1.gpg" ]]; then
         run_checks "$1"
     else
@@ -143,6 +145,7 @@ function check_cycle(){
         echo "Quantifier for --cycle is not valid"; exit 1
     fi
 }
+
 function get_password(){
     read -s -p "Type Password: " PASSWORD ; echo
     read -s -p "Retype Password: " PASSWORD_CONFIRM ; echo
@@ -180,8 +183,8 @@ function save(){
 
 function audit(){
     if [[ -n "$2" ]] && [[ "$2" != "--no-recursive" ]]; then
-	echo "Option not valid"
-	exit 1
+        echo "Option not valid"
+        exit 1
     fi
     do_audit "$ENTRY" "$2"
 }
