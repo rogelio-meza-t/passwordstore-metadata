@@ -112,11 +112,16 @@ function run_checks(){
 function do_audit(){
     if [[ -d "$PREFIX/$1" ]]; then
         draw_tree "$1"
+	if [[ -n "$2" ]]; then
+	    dir_entries="$PREFIX/$1/*.gpg"
+        else
+	    dir_entries="$PREFIX/$1/*"
+	fi
 
-        for file in "$PREFIX/$1"/*; do
+        for file in $dir_entries; do
             no_prefix=${file#$PREFIX/}
             no_extension=${no_prefix%.gpg}
-            do_audit "${no_extension}"
+            do_audit "${no_extension}" "$2"
         done
     elif [[ -f "$PREFIX/$1.gpg" ]]; then
         run_checks "$1"
@@ -174,10 +179,14 @@ function save(){
 }
 
 function audit(){
-    do_audit "$ENTRY"
+    if [[ -n "$2" ]] && [[ "$2" != "--no-recursive" ]]; then
+	echo "Option not valid"
+	exit 1
+    fi
+    do_audit "$ENTRY" "$2"
 }
 
 case "$1" in
     save)shift;save "$@" ;;
-    audit)shift;audit ;;
+    audit)shift;audit "$@";;
 esac
